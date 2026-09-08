@@ -26,24 +26,37 @@ setInterval(() => {
     const active = lastActivityTime > 0 && now - lastActivityTime < MAX_INACTIVITY
     const heartbeatStale = !lastHeartbeat || now - lastHeartbeat.time >= HEARTBEAT_INTERVAL
 
-    if (active && heartbeatStale) sendHeartbeat(false)
+    if (active && heartbeatStale) void sendHeartbeat(false)
 }, 12_000)
+
+export async function start() {
+    heartbeatQueue = (await figma.clientStorage.getAsync("heartbeatQueue")) ?? []
+    pendingWrite = (await figma.clientStorage.getAsync("pendingWrite")) ?? false
+
+    if (heartbeatQueue.length > 0) flushHeartbeat()
+}
 
 export function markActivity() {
     lastActivityTime = Math.floor(Date.now() / 1000)
 }
 
-export function sendHeartbeat(isWrite:boolean) {
+export async function sendHeartbeat(isWrite:boolean) {
     const entity = figma.currentPage.name
     const now = Math.floor(Date.now() / 1000)
 
-    if (isWrite) pendingWrite = true
+    if (isWrite) {
+        pendingWrite = true
+        await saveHeartbeatState()
+    }
 
     if (lastHeartbeat && lastHeartbeat.entity === entity && now - lastHeartbeat.time < HEARTBEAT_INTERVAL) {
         return
     }
 
-    if (pendingWrite) isWrite = true
+    if (pendingWrite) {
+        isWrite = true
+        await saveHeartbeatState()
+    }
 
     const heartbeat: Heartbeat = {
         entity,
@@ -60,6 +73,7 @@ export function sendHeartbeat(isWrite:boolean) {
     heartbeatQueue.push(heartbeat)
     lastHeartbeat = heartbeat
     pendingWrite = false
+    await saveHeartbeatState()
 
     if (heartbeatQueue.length >= BATCH_SIZE) flushHeartbeat()
 }
@@ -75,10 +89,17 @@ async function flushHeartbeat() {
     try {
         await sendHeartbeatsToAPI(batch)
         heartbeatQueue.splice(0, batch.length)
+        await saveHeartbeatState()
     } catch (error) {
         console.error("Failed to send heartbeat batch:", error) 
         return
     } finally {isFlushing = false}
 
     if (heartbeatQueue.length >= BATCH_SIZE) flushHeartbeat()
+}
+
+
+async function saveHeartbeatState() {
+    await figma.clientStorage.setAsync("heartbeatQueue", heartbeatQueue)
+    await figma.clientStorage.setAsync("pendingWrite", pendingWrite)
 }

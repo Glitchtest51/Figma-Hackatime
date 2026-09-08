@@ -5,13 +5,13 @@ export async function setupListeners() {
 
     figma.on('selectionchange', () => {
         // markActivity()
-        sendHeartbeat(false)
+        void sendHeartbeat(false)
         console.log('selectionchange')
     })
 
     figma.on('currentpagechange', () => {
         // markActivity()
-        sendHeartbeat(false)
+        void sendHeartbeat(false)
         console.log('currentpagechange')
     })
 
@@ -19,7 +19,7 @@ export async function setupListeners() {
         if (!event.documentChanges.some(change => change.origin === 'LOCAL')) {return}
 
         markActivity()
-        sendHeartbeat(true)
+        void sendHeartbeat(true)
         console.log('documentchange')
     })
 }

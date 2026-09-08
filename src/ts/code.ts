@@ -1,5 +1,6 @@
 import { setupListeners } from "./listeners"
 import { checkAPI } from "./api"
+import { start } from "./heartbeat"
 
 async function main() {
     const apiKey = await figma.clientStorage.getAsync('apiKey')
@@ -25,6 +26,7 @@ async function main() {
     }
 
     await setupListeners()
+    await start()
 }
 
 figma.ui.onmessage = async (message) => {
@@ -41,6 +43,7 @@ figma.ui.onmessage = async (message) => {
         figma.ui.postMessage({type: "apiOK"})
         
         await setupListeners()
+        await start()
     }
 }
 
