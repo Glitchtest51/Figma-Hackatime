@@ -1,0 +1,23 @@
+{
+  "name": "HackaTime for Figma",
+  "id": "1678682497647704981",
+  "api": "1.0.0",
+  "main": "build/code.js",
+  "ui": "src/html/ui.html",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "documentAccess": "dynamic-page",
+  "editorType": [
+    "figma",
+    "figjam",
+    "slides",
+    "buzz"
+  ],
+  "menu": [
+    {"name": "Open HackaTime Config", "command": "openConfigUI"}
+  ],
+  "networkAccess": {
+    "allowedDomains": ["*"],
+    "reasoning": "This plugin supports Wakatime-compatible self-hosted servers such as Hackatime and Wakapi, so users must be able to connect to custom API domains."
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "Figma-HackaTime",
+  "version": "1.0.0",
+  "description": "A Plugin that adds support for Figma to HackaTime",
+  "main": "build/code.js",
+  "scripts": {
+    "build": "esbuild src/ts/code.ts --bundle --outfile=build/code.js",
+    "watch": "esbuild src/ts/code.ts --bundle --outfile=build/code.js --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "author": "Glitchtest51",
+  "license": "GPL-3.0-only",
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@figma/eslint-plugin-figma-plugins": "*",
+    "@figma/plugin-typings": "^1.138.0",
+    "esbuild": "^0.28.2",
+    "eslint": "^9.39.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.1"
+  }
+}
